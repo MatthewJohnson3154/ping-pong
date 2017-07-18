@@ -1,8 +1,10 @@
 {
-  "name": "ladder",
+  "name": "ping-pong",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://matthewjohnson3154.github.io/ping-pong",
   "dependencies": {
+    "gh-pages": "^1.0.0",
     "material-ui": "^0.18.6",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -10,6 +12,8 @@
     "react-tap-event-plugin": "^2.0.1"
   },
   "scripts": {
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
