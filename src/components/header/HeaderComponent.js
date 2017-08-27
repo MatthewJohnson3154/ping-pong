@@ -5,9 +5,6 @@ import MatchDialogComponent from '../match-dialog/MatchDialogComponent'
 import './HeaderComponent.css'
 
 const styles = {
-  appBar: {
-    position: 'fixed'
-  },
   title: {
     cursor: 'pointer'
   }
@@ -16,7 +13,7 @@ const styles = {
 const HeaderComponent = (props) => (
   <AppBar
     title={<span style={styles.title}>{props.title}</span>}
-    iconElementRight={<MatchDialogComponent />}
+    iconElementRight={<MatchDialogComponent players={props.players} />}
     style={styles.appBar}
   />
 )

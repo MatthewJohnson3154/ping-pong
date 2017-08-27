@@ -4,3 +4,9 @@ body {
   font-family: sans-serif;
   background-color: #f4f4f4;
 }
+
+.app {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}

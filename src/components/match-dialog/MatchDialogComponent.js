@@ -17,6 +17,9 @@ const styles = {
   },
   selectField: {
     marginRight: '20px'
+  },
+  error: {
+    color: 'red'
   }
 }
 const K = 32
@@ -27,12 +30,13 @@ const calcExpectedScore = (player, rA, rB) => player === 'A'
 const calcELO = (r, s, e) => r + K * (s - e)
 
 class MatchDialogComponent extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
       open: false,
-      winner: '',
-      loser: ''
+      winner: {},
+      loser: {},
+      errorText: ''
     }
   }
 
@@ -40,12 +44,20 @@ class MatchDialogComponent extends Component {
     this.setState({open: true})
   }
 
-  // TODO - wire this together with the actual data from PlayerComponent
   handleClose () {
-    let playerAELO = Math.floor(calcELO(1999, 1, calcExpectedScore('A', 1999, 1689)))
-    let playerBELO = Math.floor(calcELO(1689, 0, calcExpectedScore('B', 1689, 1999)))
-    console.log('Matthew Johnson\'s ELO changed from 1999 to ' + playerAELO)
-    console.log('Susan Emerick\'s ELO changed from 1689 to ' + playerBELO)
+    this.setState({open: false})
+  }
+
+  // TODO - wire this together with the actual data from PlayerComponent
+  handleSubmit () {
+    if (Object.keys(this.state.winner).length === 0 || Object.keys(this.state.loser).length === 0) {
+      this.setState({errorText: 'Error: please choose both a winner and a loser'})
+      return
+    }
+    let winner = this.props.players.find((player) => player === this.state.winner)
+    let loser = this.props.players.find((player) => player === this.state.loser)
+    winner.rating = Math.floor(calcELO(winner.rating, 1, calcExpectedScore('A', winner.rating, loser.rating)))
+    loser.rating = Math.floor(calcELO(loser.rating, 0, calcExpectedScore('B', winner.rating, loser.rating)))
     this.setState({open: false})
   }
 
@@ -67,7 +79,7 @@ class MatchDialogComponent extends Component {
       <FlatButton
         label='Submit'
         primary
-        onTouchTap={() => this.handleClose()}
+        onTouchTap={() => this.handleSubmit()}
       />
     ]
 
@@ -86,17 +98,16 @@ class MatchDialogComponent extends Component {
           onRequestClose={() => this.handleClose()}
         >
           <p>Recently played a game? Enter the results of the match here.</p>
+          <p style={styles.error}>{this.state.errorText}</p>
           <SelectField
             floatingLabelText='Winner'
             value={this.state.winner}
             onChange={(event, index, value) => this.handleWinnerChange(event, index, value)}
             style={styles.selectField}
           >
-            <MenuItem value={'MJ'} primaryText='Matthew Johnson' />
-            <MenuItem value={'SE'} primaryText='Susan Emerick' />
-            <MenuItem value={'MP'} primaryText='MyCah Pleasant' />
-            <MenuItem value={'KH'} primaryText='Kate Haskell' />
-            <MenuItem value={'KB'} primaryText='Keith Barker' />
+            {this.props.players.map((player, i) => (
+              <MenuItem key={i} value={player} primaryText={player.name} />
+            ))}
           </SelectField>
           <SelectField
             floatingLabelText='Loser'
@@ -104,11 +115,9 @@ class MatchDialogComponent extends Component {
             onChange={(event, index, value) => this.handleLoserChange(event, index, value)}
             style={styles.selectField}
           >
-            <MenuItem value={'MJ'} primaryText='Matthew Johnson' />
-            <MenuItem value={'SE'} primaryText='Susan Emerick' />
-            <MenuItem value={'MP'} primaryText='MyCah Pleasant' />
-            <MenuItem value={'KH'} primaryText='Kate Haskell' />
-            <MenuItem value={'KB'} primaryText='Keith Barker' />
+            {this.props.players.map((player, i) => (
+              <MenuItem key={i} value={player} primaryText={player.name} />
+            ))}
           </SelectField>
         </Dialog>
       </div>
